@@ -16,20 +16,20 @@ public class Player {
     private final Image power;
     private final Image hit;
     private final Image death;
-    private Rectangle playerBox;
     public double x; //x coordinate
     public double y; //y coordinate
     private Rectangle hitBox;
-    private final double punchPow; //These are constants that are
-    private final double kickPow; // set after the constructor is
-    private final double powPow; // called and determine power of moves 
-    private double health;
+    private final int punchPow; //These are constants that are
+    private final int kickPow; // set after the constructor is
+    private final int powPow; // called and determine power of moves 
+    private int health;
+    private int speed;
     public boolean isDead = false;
-    private long moveStop = 0;
+    private long moveStop = 0; //used to determine time between moves
     private boolean movingUp = false; //Used to jump up through grounds
     private int numJumps = 0;
 
-    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, double x_1, double y_1, Rectangle hb, double pp, double kp, double powp, double hlth){
+    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, double x_1, double y_1, Rectangle hb, int pp, int kp, int powp, int s, int hlth){
         left = l;
         right = r;
         jumpLeft = jl;
@@ -45,35 +45,45 @@ public class Player {
         punchPow = pp;
         kickPow = kp;
         powPow = powp;
-        health = hlth;
-        
+        speed = s;
+        health = hlth;        
     }
-    
-    /*
-    Name: Move
-    Arguments: keyInput(s)
-    Logic: Changes lateral and vertical movement according to key presed. 
-    	   Hitbox changes with position. Naturally falling if not on ground.
-    Return: void
-    */
+
+    public void move(GameContainer gc){
+    	int xDir = 0;
+        if(gc.getInput().isKeyDown(Input.KEY_RIGHT))
+            xDir = speed;
+        else if(gc.getInput().isKeyDown(Input.KEY_LEFT));
+            xDir = -1 * speed;
+        x = x + xDir;
+        hitBox.move(xDir, 0);
+        if(!(/*Player is not colliding with ground*/Math.random() < .5)){
+        	//Player naturally falling
+        	y--; //should be changed to a value greater than 1
+        	hitBox.move(0, -1);
+        }
+    }
     
     //Need to implement collision detection
     public void jump(GameContainer gc){
         numJumps++;
     	movingUp = true;
-    	int t = 1;
+    	int t = 0;
         double yI = y;
-        while(/* Player is not colliding with ground*/){
+        while(/* Player is not colliding with ground*/ Math.random() < .5){
             if(numJumps < 2 && gc.getInput().isKeyDown(Input.KEY_UP))
             	jump(gc);
-        	int xDir = 0;
-            if(gc.getInput().isKeyDown(Input.KEY_RIGHT))
-                xDir = 1;
-            else if(gc.getInput().isKeyDown(Input.KEY_LEFT));
-                xDir = -1;
-            x = x + xDir;
-            y = -1 * Math.pow(0.2 * t, 2) + (3 * t) + yI;
-            t++;
+            else{
+	        	int xDir = 0;
+	            if(gc.getInput().isKeyDown(Input.KEY_RIGHT))
+	                xDir = speed;
+	            else if(gc.getInput().isKeyDown(Input.KEY_LEFT));
+	                xDir = -1 * speed;
+	            x = x + xDir;
+	            y = -1 * Math.pow(0.2 * t, 2) + (3 * t) + yI;
+	            t++;
+	            hitBox.move(xDir, -1 * Math.pow(0.2 * t, 2) + (3 * t));
+	        }
         }
         movingUp = false;
     }
@@ -86,7 +96,7 @@ public class Player {
             return punch;
         }
         moveStop = System.currentTimeMillis();
-        return null;
+        return left; //figure out what direction to return
     }
     public Image kick(Player a){
         if(System.currentTimeMillis() - moveStop >= 750){ //750 is arbitrary
@@ -94,7 +104,7 @@ public class Player {
             return kick;
         }
         moveStop = System.currentTimeMillis();
-        return null;
+        return left; //figure out what direction to return
     }
     public Image power(Player a){
         if(System.currentTimeMillis() - moveStop >= 1200){ //1200 is arbitrary
@@ -102,7 +112,8 @@ public class Player {
             return power;
         }
         moveStop = System.currentTimeMillis();
-        return null;
+        return left; //figure out what direction to return
+        
     }
     
     
