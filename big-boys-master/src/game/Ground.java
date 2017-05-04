@@ -2,7 +2,7 @@ package game;
 
 public class Ground {
     private final Rectangle space;
-    public Ground(double x, double x_2, double y, double y_2){
+    public Ground(int x, int x_2, int y, int y_2){
         space = new Rectangle(x, x_2, y, y_2);
     }
     /*
