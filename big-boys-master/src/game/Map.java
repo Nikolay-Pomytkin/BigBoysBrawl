@@ -25,8 +25,10 @@ public class Map {
         }
     }
 
-    public void checkDead(Player p){
-        if(p.x < boundary.x1 || p.x < boundary.x2 || p.y < boundary.y2)
-            p.die();
+    public void checkDead(){
+        if(p1.x < boundary.x1 || p1.x < boundary.x2 || p1.y < boundary.y2)
+            p1.die();
+        if(p2.x < boundary.x1 || p2.x < boundary.x2 || p2.y < boundary.y2)
+            p2.die();
     }
 }
