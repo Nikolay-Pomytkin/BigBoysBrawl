@@ -15,14 +15,12 @@ public class Map {
         p2 = b;
         background = i;
     }
-    public void collideAll(){
+    public boolean collideAll(Player p){
         for(Ground g : grounds){
-            /*
-            Need to code for collide method
-            g.collide(p1);
-            g.collide(p2);
-            */
+            if(g.collide(p))
+            	return true;
         }
+        return false;
     }
 
     public void checkDead(){

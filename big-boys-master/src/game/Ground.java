@@ -11,4 +11,9 @@ public class Ground {
     Logic: checks if player pos is in the same place as ground pos. If true, play movement is set to 0
     Returns: void
     */
+    public boolean collide(Player p){
+    	if(space.isOn(p.x, p.y-p.chestFootDist, p.movingUp))
+    		return true;
+    	return false;
+    }
 }

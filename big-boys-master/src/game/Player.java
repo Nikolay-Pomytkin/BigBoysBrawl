@@ -26,15 +26,16 @@ public class Player {
     private int speed;
     public boolean isDead = false;
     private long moveStop = 0; //used to determine time between moves
-    private boolean movingUp = false; //Used to jump up through grounds
+    public boolean movingUp = false; //Used to jump up through grounds
     private int numJumps = 0;
     private final int punchDist; //How long arm is. Used for collision
     private final int kickDist; //How long leg is. Used for collision
     private final int legFistDist; //Vertical distance (y distance) between fist and leg
     private boolean movingLeft = false;
-    private final int chestFootDist; //Vertical distance (y distance) between the variable y and the feet of the player
+    public final int chestFootDist; //Vertical distance (y distance) between the variable y and the feet of the player
+    private Map map;
 
-    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, int x_1, int y_1, Rectangle hb, int pp, int kp, int powp, int s, int hlth, int pD, int kD, int lF, int cF){
+    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, int x_1, int y_1, Rectangle hb, int pp, int kp, int powp, int s, int hlth, int pD, int kD, int lF, int cF, Map m){
         left = l;
         right = r;
         jumpLeft = jl;
@@ -56,6 +57,7 @@ public class Player {
         kickDist = kD;
         legFistDist = lF;
         chestFootDist = cF;
+        map = m;
     }
 
     public void move(GameContainer gc){
@@ -70,7 +72,7 @@ public class Player {
         }
         x = x + xDir;
         hitBox.move(xDir, 0);
-        if(!(/*Player is not colliding with ground*/Math.random() < .5)){
+        if(!(map.collideAll(this))){
         	//Player naturally falling
         	y--; //should be changed to a value greater than 1
         	hitBox.move(0, -1);
@@ -83,7 +85,7 @@ public class Player {
     	movingUp = true;
     	int t = 0;
         double yI = y;
-        while(/* Player is not colliding with ground*/ Math.random() < .5){
+        while(!(map.collideAll(this))){
             if(numJumps < 2 && gc.getInput().isKeyDown(Input.KEY_UP))
             	jump(gc);
             else{
