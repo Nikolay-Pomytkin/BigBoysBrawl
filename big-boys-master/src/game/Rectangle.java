@@ -18,5 +18,10 @@ public class Rectangle {
         y1 += (int)(deltaY);
         y2 += (int)(deltaY);
     }
+    public boolean isIn(int x, int y){
+    	if(x >= x1 && x <= x2 && y >= y1 && y <= y2)
+    		return true;
+    	return false;
+    }
 }
 

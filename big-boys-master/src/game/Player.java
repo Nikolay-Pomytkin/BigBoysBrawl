@@ -16,8 +16,8 @@ public class Player {
     private final Image power;
     private final Image hit;
     private final Image death;
-    public double x; //x coordinate
-    public double y; //y coordinate
+    public int x; //x coordinate
+    public int y; //y coordinate
     private Rectangle hitBox;
     private final int punchPow; //These are constants that are
     private final int kickPow; // set after the constructor is
@@ -28,8 +28,12 @@ public class Player {
     private long moveStop = 0; //used to determine time between moves
     private boolean movingUp = false; //Used to jump up through grounds
     private int numJumps = 0;
+    private int punchDist; //How long arm is. Used for collision
+    private int kickDist; //How long leg is. Used for collision
+    private int legFistDist; //Vertical distance (y coordinate) between fist and leg
+    private boolean movingLeft = false;
 
-    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, double x_1, double y_1, Rectangle hb, int pp, int kp, int powp, int s, int hlth){
+    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, int x_1, int y_1, Rectangle hb, int pp, int kp, int powp, int s, int hlth, int pD, int kD, int lF){
         left = l;
         right = r;
         jumpLeft = jl;
@@ -46,15 +50,22 @@ public class Player {
         kickPow = kp;
         powPow = powp;
         speed = s;
-        health = hlth;        
+        health = hlth;
+        punchDist = pD;
+        kickDist = kD;
+        legFistDist = lF;
     }
 
     public void move(GameContainer gc){
     	int xDir = 0;
-        if(gc.getInput().isKeyDown(Input.KEY_RIGHT))
+        if(gc.getInput().isKeyDown(Input.KEY_RIGHT)){
             xDir = speed;
-        else if(gc.getInput().isKeyDown(Input.KEY_LEFT));
+            movingLeft = false;
+        }
+        else if(gc.getInput().isKeyDown(Input.KEY_LEFT)){
             xDir = -1 * speed;
+            movingLeft = true;
+        }
         x = x + xDir;
         hitBox.move(xDir, 0);
         if(!(/*Player is not colliding with ground*/Math.random() < .5)){
@@ -75,12 +86,16 @@ public class Player {
             	jump(gc);
             else{
 	        	int xDir = 0;
-	            if(gc.getInput().isKeyDown(Input.KEY_RIGHT))
+	        	if(gc.getInput().isKeyDown(Input.KEY_RIGHT)){
 	                xDir = speed;
-	            else if(gc.getInput().isKeyDown(Input.KEY_LEFT));
+	                movingLeft = false;
+	            }
+	            else if(gc.getInput().isKeyDown(Input.KEY_LEFT)){
 	                xDir = -1 * speed;
+	                movingLeft = true;
+	            }
 	            x = x + xDir;
-	            y = -1 * Math.pow(0.2 * t, 2) + (3 * t) + yI;
+	            y = (int)(-1 * Math.pow(0.2 * t, 2) + (3 * t) + yI);
 	            t++;
 	            hitBox.move(xDir, -1 * Math.pow(0.2 * t, 2) + (3 * t));
 	        }
@@ -92,7 +107,10 @@ public class Player {
 
     //MISSING FROM ALL ATTACK METHODS: CHECKING IF COLLISSION IS TRUE
     public Image punch(Player a){
-        if(System.currentTimeMillis() - moveStop >= 500){ //500 is arbitrary
+    	int pD = punchDist;
+    	if(movingLeft)
+    		pD *= -1;
+        if(a.collide(x + pD, y) && System.currentTimeMillis() - moveStop >= 500){ //500 is arbitrary
             a.gotHit(10 * punchPow); //10 is arbitrary
             return punch;
         }
@@ -100,7 +118,10 @@ public class Player {
         return left; //figure out what direction to return
     }
     public Image kick(Player a){
-        if(System.currentTimeMillis() - moveStop >= 750){ //750 is arbitrary
+    	int kD = kickDist;
+    	if(movingLeft)
+    		kD *= -1;
+        if(a.collide(x + kD, y-legFistDist) && System.currentTimeMillis() - moveStop >= 750){ //750 is arbitrary
             a.gotHit(20 * kickPow); //20 is arbitrary
             return kick;
         }
@@ -136,4 +157,11 @@ public class Player {
     Logic: Checks if attacking player collides with this player and prevents player from moving farther
     Return: Boolean
     */
+    
+    //Arguments taken are coordinates of punch/kick
+    public boolean collide(int x, int y){
+    	if(hitBox.isIn(x, y))
+    		return true;
+    	return false;
+    }
 }
