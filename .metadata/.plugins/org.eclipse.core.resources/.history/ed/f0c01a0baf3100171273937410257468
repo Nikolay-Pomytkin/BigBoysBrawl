@@ -28,13 +28,12 @@ public class Player {
     private long moveStop = 0; //used to determine time between moves
     private boolean movingUp = false; //Used to jump up through grounds
     private int numJumps = 0;
-    private final int punchDist; //How long arm is. Used for collision
-    private final int kickDist; //How long leg is. Used for collision
-    private final int legFistDist; //Vertical distance (y distance) between fist and leg
+    private int punchDist; //How long arm is. Used for collision
+    private int kickDist; //How long leg is. Used for collision
+    private int legFistDist; //Vertical distance (y coordinate) between fist and leg
     private boolean movingLeft = false;
-    private final int chestFootDist; //Vertical distance (y distance) between the variable y and the feet of the player
 
-    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, int x_1, int y_1, Rectangle hb, int pp, int kp, int powp, int s, int hlth, int pD, int kD, int lF, int cF){
+    public Player(Image l, Image r, Image jl, Image jr, Image p, Image k, Image pow, Image ht, Image d, int x_1, int y_1, Rectangle hb, int pp, int kp, int powp, int s, int hlth, int pD, int kD, int lF){
         left = l;
         right = r;
         jumpLeft = jl;
@@ -55,7 +54,6 @@ public class Player {
         punchDist = pD;
         kickDist = kD;
         legFistDist = lF;
-        chestFootDist = cF;
     }
 
     public void move(GameContainer gc){
@@ -112,7 +110,6 @@ public class Player {
     	int pD = punchDist;
     	if(movingLeft)
     		pD *= -1;
-    	//Show animation here
         if(a.collide(x + pD, y) && System.currentTimeMillis() - moveStop >= 500){ //500 is arbitrary
             a.gotHit(10 * punchPow); //10 is arbitrary
             return punch;
@@ -124,7 +121,6 @@ public class Player {
     	int kD = kickDist;
     	if(movingLeft)
     		kD *= -1;
-    	//Show animation here
         if(a.collide(x + kD, y-legFistDist) && System.currentTimeMillis() - moveStop >= 750){ //750 is arbitrary
             a.gotHit(20 * kickPow); //20 is arbitrary
             return kick;
@@ -133,7 +129,6 @@ public class Player {
         return left; //figure out what direction to return
     }
     public Image power(Player a){
-    	//Show animation here
         if(System.currentTimeMillis() - moveStop >= 1200){ //1200 is arbitrary
             a.gotHit(25 * powPow); //25 is arbitrary
             return power;
@@ -155,6 +150,13 @@ public class Player {
         isDead = true;
         return death;
     }
+    
+    /*
+    Name: Collide
+    Arguments: Player attacking this player
+    Logic: Checks if attacking player collides with this player and prevents player from moving farther
+    Return: Boolean
+    */
     
     //Arguments taken are coordinates of punch/kick
     public boolean collide(int x, int y){
